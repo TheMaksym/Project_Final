@@ -46,16 +46,11 @@ public:
     void readInjsonlMB(string filename);
     void readInjsonlStr(string filename);
 
-    void alterCPU(pcCombo orgPC);
-    void alterGPU(pcCombo orgPC);
-    void alterPSU(pcCombo orgPC);
-    void alterRAM(pcCombo orgPC);
-    void alterMB(pcCombo orgPC);
-    void alterSTR(pcCombo orgPC);
-    void comboMaker();
-
-
-
+    unordered_map<string, vector<Motherboard*>> motherboardsBySocket;
+    unordered_map<int, vector<RAM*>> ramByGeneration;
+    void hashMotherboards();
+    void hashRam();
+    void conglomerate();
 };
 
 #endif //PROJECT_3__PCUTILITIES_H

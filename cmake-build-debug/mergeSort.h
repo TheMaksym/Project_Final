@@ -41,7 +41,7 @@ void merge(vector<T>& vec, int left, int mid, int right) {
 }
 
 template <typename T>
-void mergeSort(vector<T>& vec, int left, int right) {
+void mergeSorts(vector<T>& vec, int left, int right) {
     if (left >= right)
         return;
 

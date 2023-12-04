@@ -173,213 +173,47 @@ void pcUtilities::readInjsonlStr(string filename) {
     }
 }
 
-void pcUtilities::alterCPU(pcCombo orgPC) {
-    int index;
-    for(int i = 0; i < CPUList.size(); i++){
-        if(CPUList[i].name == orgPC.cpu.name){
-            index = i;
-        }
+void pcUtilities::hashMotherboards() {
+    for(Motherboard& mobo : MBList){
+        motherboardsBySocket[mobo.socket].push_back(&mobo);
     }
-    if(index < 50){
-        int remaining = 100 - index;
-        for(int i = index; i >= 0; --i) {
-            sortedList.push_back(pcCombo(CPUList[i], orgPC.gpu, orgPC.psu, orgPC.ram, orgPC.mb, orgPC.str));
-        }
-        for(int i = 1; i < remaining + 1; i++){
-            sortedList.push_back(pcCombo(CPUList[i + index], orgPC.gpu, orgPC.psu, orgPC.ram, orgPC.mb, orgPC.str));
-        }
-    }
-    else if(index > CPUList.size() - 50){
-        int remaining = 100 - (CPUList.size() - index);
-        for(int i = 0; i < CPUList.size() - index; i++){
-            sortedList.push_back(pcCombo(CPUList[index + i], orgPC.gpu, orgPC.psu, orgPC.ram, orgPC.mb, orgPC.str));
-        }
-        for(int i = remaining; i >= 0; --i){
-            sortedList.push_back(pcCombo(CPUList[index - i], orgPC.gpu, orgPC.psu, orgPC.ram, orgPC.mb, orgPC.str));
-        }
-    }
-    else{
-        for(int i = 1; i < 51; i++){
-            sortedList.push_back(pcCombo(CPUList[index + i], orgPC.gpu, orgPC.psu, orgPC.ram, orgPC.mb, orgPC.str));
-            sortedList.push_back(pcCombo(CPUList[index - i], orgPC.gpu, orgPC.psu, orgPC.ram, orgPC.mb, orgPC.str));
-        }
+}
+void pcUtilities::hashRam() {
+    for(RAM& ram : RAMList){
+        ramByGeneration[ram.generation].push_back(&ram);
     }
 }
 
-void pcUtilities::alterGPU(pcCombo orgPC) {
-    int index;
-    for(int i = 0; i < GPUList.size(); i++){
-        if(GPUList[i].name == orgPC.gpu.name){
-            index = i;
+void pcUtilities::conglomerate() {
+    int size = 10000000; //Max size of pc list, 10 million, if goes over stop, if under, return
+    hashMotherboards();
+    hashRam();
+    sortedList.resize(size);
+
+    int count = 0;
+    //Creates large number of possible compatible combination of PC parts
+    for(int a = 0; a < CPUList.size()/4; a++){
+        CPU& cpu = CPUList[a];
+        cout << cpu.name << endl;
+        for(int b = 0; b < GPUList.size()/6; b++){
+            GPU& gpu = GPUList[b];
+            for(int c = 0; c < motherboardsBySocket[cpu.socket].size()/2; c++){
+                Motherboard& mobo = *motherboardsBySocket[cpu.socket][c];
+                for(int d = 0; d < min((int)ramByGeneration[mobo.ram_generation].size(), 2); d++) {
+                    RAM& ram = *ramByGeneration[mobo.ram_generation][d];
+                    for(int e = 16; e < 17; e += 500) {
+                        if(count == size){
+                            cout << a << endl;
+                            return;
+                        }
+                        Storage& str = STRList[e];
+                        sortedList[count] = pcCombo(cpu, gpu, PSUList[0], ram, mobo, str);
+                        count++;
+                    }
+                }
+            }
         }
     }
-    if(index < 50){
-        int remaining = 100 - index;
-        for(int i = index; i >= 0; --i) {
-            sortedList.push_back(pcCombo(orgPC.cpu, GPUList[i], orgPC.psu, orgPC.ram, orgPC.mb, orgPC.str));
-        }
-        for(int i = 1; i < remaining + 1; i++){
-            sortedList.push_back(pcCombo(orgPC.cpu, GPUList[i + index], orgPC.psu, orgPC.ram, orgPC.mb, orgPC.str));
-        }
-    }
-    else if(index > GPUList.size() - 50){
-        int remaining = 100 - (GPUList.size() - index);
-        for(int i = 0; i < GPUList.size() - index; i++){
-            sortedList.push_back(pcCombo(orgPC.cpu, GPUList[index + i], orgPC.psu, orgPC.ram, orgPC.mb, orgPC.str));
-        }
-        for(int i = remaining; i >= 0; --i){
-            sortedList.push_back(pcCombo(orgPC.cpu, GPUList[index - i], orgPC.psu, orgPC.ram, orgPC.mb, orgPC.str));
-        }
-    }
-    else{
-        for(int i = 1; i < 101; i++){
-            sortedList.push_back(pcCombo(orgPC.cpu, GPUList[index + i], orgPC.psu, orgPC.ram, orgPC.mb, orgPC.str));
-            sortedList.push_back(pcCombo(orgPC.cpu, GPUList[index - i], orgPC.psu, orgPC.ram, orgPC.mb, orgPC.str));
-        }
-    }
+    sortedList.resize(count); //If under max size, return
 }
-
-
-void pcUtilities::alterPSU(pcCombo orgPC) {
-    int index;
-    for(int i = 0; i < PSUList.size(); i++){
-        if(PSUList[i].name == orgPC.psu.name){
-            index = i;
-        }
-    }
-    if(index < 50){
-        int remaining = 100 - index;
-        for(int i = index; i >= 0; --i) {
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, PSUList[i], orgPC.ram, orgPC.mb, orgPC.str));
-        }
-        for(int i = 1; i < remaining + 1; i++){
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, PSUList[i + index], orgPC.ram, orgPC.mb, orgPC.str));
-        }
-    }
-    else if(index > PSUList.size() - 50){
-        int remaining = 100 - (PSUList.size() - index);
-        for(int i = 0; i < PSUList.size() - index; i++){
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, PSUList[index + i], orgPC.ram, orgPC.mb, orgPC.str));
-        }
-        for(int i = remaining; i >= 0; --i){
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, PSUList[index - i], orgPC.ram, orgPC.mb, orgPC.str));
-        }
-    }
-    else{
-        for(int i = 1; i < 101; i++){
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, PSUList[index + i], orgPC.ram, orgPC.mb, orgPC.str));
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, PSUList[index - i], orgPC.ram, orgPC.mb, orgPC.str));
-        }
-    }
-}
-
-void pcUtilities::alterRAM(pcCombo orgPC) {
-    int index;
-    for(int i = 0; i < RAMList.size(); i++){
-        if(RAMList[i].name == orgPC.ram.name){
-            index = i;
-        }
-    }
-    if(index < 50){
-        int remaining = 100 - index;
-        for(int i = index; i >= 0; --i) {
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, orgPC.psu, RAMList[i], orgPC.mb, orgPC.str));
-        }
-        for(int i = 1; i < remaining + 1; i++){
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, orgPC.psu, RAMList[i + index], orgPC.mb, orgPC.str));
-        }
-    }
-    else if(index > RAMList.size() - 50){
-        int remaining = 100 - (RAMList.size() - index);
-        for(int i = 0; i < RAMList.size() - index; i++){
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, orgPC.psu, RAMList[index + i], orgPC.mb, orgPC.str));
-        }
-        for(int i = remaining; i >= 0; --i){
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, orgPC.psu, RAMList[index - i], orgPC.mb, orgPC.str));
-        }
-    }
-    else{
-        for(int i = 1; i < 101; i++){
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, orgPC.psu, RAMList[index + i], orgPC.mb, orgPC.str));
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, orgPC.psu, RAMList[index - i], orgPC.mb, orgPC.str));
-        }
-    }
-}
-
-void pcUtilities::alterMB(pcCombo orgPC) {
-    int index;
-    for(int i = 0; i < MBList.size(); i++){
-        if(MBList[i].name == orgPC.mb.name){
-            index = i;
-        }
-    }
-    if(index < 50){
-        int remaining = 100 - index;
-        for(int i = index; i >= 0; --i) {
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, orgPC.psu, orgPC.ram, MBList[i], orgPC.str));
-        }
-        for(int i = 1; i < remaining + 1; i++){
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, orgPC.psu, orgPC.ram, MBList[i+ index], orgPC.str));
-        }
-    }
-    else if(index > MBList.size() - 50){
-        int remaining = 100 - (MBList.size() - index);
-        for(int i = 0; i < MBList.size() - index; i++){
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, orgPC.psu, orgPC.ram, MBList[i+ index], orgPC.str));
-        }
-        for(int i = remaining; i >= 0; --i){
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, orgPC.psu, orgPC.ram, MBList[index - i], orgPC.str));
-        }
-    }
-    else{
-        for(int i = 1; i < 101; i++){
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, orgPC.psu, orgPC.ram, MBList[i+ index], orgPC.str));
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, orgPC.psu, orgPC.ram, MBList[index - i], orgPC.str));
-        }
-    }
-}
-
-void pcUtilities::alterSTR(pcCombo orgPC) {
-    int index;
-    for(int i = 0; i < STRList.size(); i++){
-        if(STRList[i].name == orgPC.str.name){
-            index = i;
-        }
-    }
-    if(index < 50){
-        int remaining = 100 - index;
-        for(int i = index; i >= 0; --i) {
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, orgPC.psu, orgPC.ram, orgPC.mb, STRList[i]));
-        }
-        for(int i = 1; i < remaining + 1; i++){
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, orgPC.psu, orgPC.ram, orgPC.mb, STRList[i+ index]));
-        }
-    }
-    else if(index > STRList.size() - 50){
-        int remaining = 100 - (STRList.size() - index);
-        for(int i = 0; i < STRList.size() - index; i++){
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, orgPC.psu, orgPC.ram, orgPC.mb, STRList[i+ index]));
-        }
-        for(int i = remaining; i >= 0; --i){
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, orgPC.psu, orgPC.ram, orgPC.mb, STRList[index - i]));
-        }
-    }
-    else{
-        for(int i = 1; i < 101; i++){
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, orgPC.psu, orgPC.ram, orgPC.mb, STRList[i+ index]));
-            sortedList.push_back(pcCombo(orgPC.cpu, orgPC.gpu, orgPC.psu, orgPC.ram, orgPC.mb, STRList[index - i]));
-        }
-    }
-}
-
-
-void pcUtilities::compareParts() {
-    for(auto& i : sortedList){
-        if(i.cpu.socket == i.mb.socket){
-            compList.push_back(i);
-        }
-    }
-}
-
-
 

@@ -3,6 +3,8 @@
 #include <vector>
 #include <set>
 #include <algorithm>
+#include <iostream>
+#include <set>
 using namespace std;
 #ifndef PROJECT_3__PCCOMBO_H
 #define PROJECT_3__PCCOMBO_H
