@@ -11,7 +11,7 @@ using namespace std;
 #ifndef PROJECT_3__PCUTILITIES_H
 #define PROJECT_3__PCUTILITIES_H
 class pcUtilities{
-private:
+public:
     vector<CPU> CPUList;
     vector<GPU> GPUList;
     vector<PSU> PSUList;
@@ -19,7 +19,24 @@ private:
     vector<Motherboard> MBList;
     vector<Storage> STRList;
     vector<pcCombo> sortedList;
-public:
+    vector<pcCombo> compList;
+
+
+
+    vector<CPU> CPUList2;
+    vector<GPU> GPUList2;
+    vector<PSU> PSUList2;
+    vector<RAM> RAMList2;
+    vector<Motherboard> MBList2;
+    vector<Storage> STRList2;
+    vector<pcCombo> sortedList2;
+
+
+
+    void compareParts();
+
+    void dupeVect();
+
     void readInjsonlCPU(string filename);
     pcUtilities();
 
@@ -28,9 +45,16 @@ public:
     void readInjsonlRAM(string filename);
     void readInjsonlMB(string filename);
     void readInjsonlStr(string filename);
-    void mergeSort();
 
-    void quickSort();
+    void alterCPU(pcCombo orgPC);
+    void alterGPU(pcCombo orgPC);
+    void alterPSU(pcCombo orgPC);
+    void alterRAM(pcCombo orgPC);
+    void alterMB(pcCombo orgPC);
+    void alterSTR(pcCombo orgPC);
+    void comboMaker();
+
+
 
 };
 

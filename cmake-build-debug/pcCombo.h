@@ -33,11 +33,13 @@ public:
     int core_count;
     double core_clock; //Base Clock of CPU
     int tdp; //Thermal Design Power, measured in watts
-    CPU(string name, double price, int core_count, double core_clock, int tdp)
+    string socket;
+    CPU(string name, double price, int core_count, double core_clock, int tdp, string socket)
     : pcPart(name, price) {
         this->core_count = core_count;
         this->core_clock = core_clock;
         this->tdp = tdp;
+        this->socket = socket;
     }
     //Default Constructor, if values need to be initialized later
     CPU() {};

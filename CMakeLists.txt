@@ -10,4 +10,4 @@ add_executable(Project_Final cmake-build-debug/main.cpp
         cmake-build-debug/dist/json/json.h
         cmake-build-debug/dist/json/json-forwards.h
         cmake-build-debug/dist/jsoncpp.cpp
-        )
+        cmake-build-debug/mergeSort.h cmake-build-debug/quickSort.h)
