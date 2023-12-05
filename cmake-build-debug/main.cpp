@@ -8,107 +8,13 @@
 #include "Mergesort.h"
 #include "Quicksort.h"
 //SFML stuff
+#include "SFMLtools.h"
 #include <SFML/Graphics.hpp>
-#include <windows.h>
-#include <unistd.h>
 using namespace std;
 
-class RectangleRange {
-    //Variables for size and position
-    int length;
-    int height;
-    int x;
-    int y;
-    //SFML Data
-    sf::RectangleShape rectangle;
-    //What percent of the rectangle is to the left of the mouse
-    float percent;
-public:
-    //Constructor takes in position and width and height
-    RectangleRange(int length, int height, int x, int y) {
-        this->length = length;
-        this->height = height;
-        this->x = x;
-        this->y = y;
-        sf::Vector2<float> size(length, height);
-        rectangle.setSize(size);
-        rectangle.setPosition(x, y);
-        rectangle.setFillColor(sf::Color::Red);
-    }
-    //Gets mouse position to determine percent
-    void handleEvent(sf::RenderWindow& window, sf::Event& event) {
-        if(event.type == sf::Event::MouseMoved){
-            sf::Vector2<int> mousePosition = sf::Mouse::getPosition(window);
-            //Change mouse position to float so it works with bounds.contains method
-            sf::Vector2<float> mousePositionF(mousePosition.x, mousePosition.y);
-            sf::FloatRect bounds = rectangle.getGlobalBounds();
-            if(bounds.contains(mousePositionF)){
-                percent = mousePositionF.x/length;
-            }
-        }
-        if(event.type == sf::Event::MouseButtonPressed){
-            sf::Vector2<int> mousePosition = sf::Mouse::getPosition(window);
-            //Change mouse position to float so it works with bounds.contains method
-            sf::Vector2<float> mousePositionF(mousePosition.x, mousePosition.y);
-            sf::FloatRect bounds = rectangle.getGlobalBounds();
-            if(bounds.contains(mousePositionF)){
-                cout << percent << endl;
-            }
-        }
-    }
-    //Returns a pointer to the Rectangle shape
-    sf::RectangleShape* getRectangle() {
-        return &rectangle;
-    }
-};
 
-//Class provides a button with a text overlay
-class TextButton{
-    //Variables for size and position
-    int length;
-    int height;
-    int x;
-    int y;
-    //SFML Data
-    sf::RectangleShape rectangle;
-    sf::Text text;
-public:
-    //Constructor takes in position and width and height
-    TextButton(int length, int height, int x, int y, sf::Font& font, string textData) {
-        this->length = length;
-        this->height = height;
-        this->x = x;
-        this->y = y;
-        text = sf::Text(textData, font, height);
-        text.setPosition(x, y);
-        sf::Vector2<float> size(text.getLocalBounds().width, height);
-        rectangle.setSize(size);
-        rectangle.setPosition(x, y);
-        rectangle.setFillColor(sf::Color::Blue);
-    }
-    //Checks if Button Clicked
-    bool handleEvent(sf::RenderWindow& window, sf::Event& event) {
-        sf::Vector2<int> mousePosition = sf::Mouse::getPosition(window);
-        //Change mouse position to float so it works with bounds.contains method
-        sf::Vector2<float> mousePositionF(mousePosition.x, mousePosition.y);
-        sf::FloatRect bounds = rectangle.getGlobalBounds();
-        if(bounds.contains(mousePositionF)){
-            if(event.type == sf::Event::MouseButtonPressed){
-                return true;
-            };
-        }
-        return false;
-    }
-    //Returns a pointer to the Rectangle shape
-    sf::RectangleShape* getRectangle() {
-        return &rectangle;
-    }
-    //Returns a pointer to the Text shape
-    sf::Text* getText() {
-        return &text;
-    }
-};
 int main() {
+    //Height and width
     int height = 900;
     int width = 800;
     //Load Fonts
@@ -121,14 +27,10 @@ int main() {
     if (!tearsinrain.loadFromFile("files/TearsInRain-ALBK2.ttf")) return EXIT_FAILURE;
     if (!Aquire.loadFromFile("files/Aquire.otf")) return EXIT_FAILURE;
 
-    //Vectors of SFML objects represent which objects should be displayed at which state of the program
-    vector<sf::Drawable*> state0; //State 0 will always be visible, contains title and bg
-    vector<sf::Drawable*> state1;
-    vector<sf::Drawable*> state2;
-    vector<sf::Drawable*> state3;
-    vector<sf::Drawable*> state4;
+    //Vector of SFML objects represent which objects should be displayed at which state of the program
+    vector<sf::Drawable*> state;
 
-    // Load a sprite to display
+    //PC Image Background
     sf::Texture texture1;
     if (!texture1.loadFromFile("files/PC Picture 2.png"))
         return EXIT_FAILURE;
@@ -220,12 +122,6 @@ int main() {
         for(sf::Drawable* toDraw : state){
             window.draw(*toDraw);
         }
-        for(sf::Drawable* toDraw : state1){
-            window.draw(*toDraw);
-        }
-        for(sf::Drawable* toDraw : state2){
-            window.draw(*toDraw);
-        }
         window.display();
 
         //Event handling logic below
@@ -296,6 +192,8 @@ int main() {
             }
         }
     }
+    //Because we stored it on the heap
+    delete pc;
     return 0;
 }
 

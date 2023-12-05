@@ -6,32 +6,32 @@
 #define PROJECT_FINAL_QUICKSORT_H
 
 template <typename T>
-int partition(vector<T>& vec, int start, int end) {
-    int pivot = vec[start].price;
+int partition(vector<T>& vec, int start, int end) { //partition function based on pivot
+    int pivot = vec[start].price; //declare pivot as the lower index
     int i = start + 1;
     int j = end;
 
-    while(true) {
-        while(i <= j && vec[i].price <= pivot) {
+    while(true) { //swap based on values
+        while(i <= j && vec[i].price <= pivot) { //Increase lower Index
             i++;
         }
-        while(i <= j && vec[j].price > pivot) {
+        while(i <= j && vec[j].price > pivot) { //Decrease upper Index
             j--;
         }
-        if(i >= j) break;
+        if(i >= j) break; //When indexes meet swap
         swap(vec[i], vec[j]);
     }
-
+    //Swap pivot and upper
     swap(vec[start], vec[j]);
     return j;
 }
 
 template <typename T>
-void quickSort(vector<T>& vec, int start, int end) {
+void quickSorts(vector<T>& vec, int start, int end) { //function call
     if(start >= end) return;
-    int p = partition(vec, start, end);
-    quickSort(vec, start, p - 1);
-    quickSort(vec, p + 1, end);
+    int p = partition(vec, start, end); //call partition
+    quickSorts(vec, start, p - 1); //recursively call quicksort
+    quickSorts(vec, p + 1, end);
 }
 
 

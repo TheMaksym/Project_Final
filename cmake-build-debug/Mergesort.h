@@ -4,7 +4,7 @@
 #include "PCUtilities.h"
 #ifndef PROJECT_FINAL_MERGESORT_H
 
-//cpu merge sort
+//The merging step of merge sort
 template <typename T>
 void merge(vector<T>& vec, int left, int mid, int right) {
     int n1 = mid - left + 1;
@@ -18,6 +18,7 @@ void merge(vector<T>& vec, int left, int mid, int right) {
         R[j] = vec[mid + 1 + j];
 
     int i = 0, j = 0, k = left;
+    //Use indexes to track which part of the merge sort
     while (i < n1 && j < n2) {
         if (L[i].price <= R[j].price) { // compare based on price
             vec[k] = L[i];
@@ -46,8 +47,8 @@ void mergeSorts(vector<T>& vec, int left, int right) {
         return;
 
     int mid = left + (right - left) / 2;
-    mergeSort(vec, left, mid);
-    mergeSort(vec, mid + 1, right);
+    mergeSorts(vec, left, mid); //recursively call merge sort
+    mergeSorts(vec, mid + 1, right);
     merge(vec, left, mid, right);
 }
 

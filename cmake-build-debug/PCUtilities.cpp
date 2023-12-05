@@ -1,18 +1,22 @@
 #include "PCUtilities.h"
 
-pcUtilities::pcUtilities() {
+PCUtilities::PCUtilities() { //constructor
 
 }
 
-void pcUtilities::readInjsonlCPU(string filename) {
+void PCUtilities::dupeVect() { //dupe list so that we can call both sorts
+    sortedList2 = sortedList;
+}
+
+void PCUtilities::readInjsonlCPU(string filename) { //read in jsonl file
     ifstream input_file(filename);
 
     string json_line;
     Json::Value root;
 
-    while(getline(input_file, json_line)) {
+    while(getline(input_file, json_line)) { //get each line
         Json::Reader reader;
-        if (reader.parse(json_line, root)) {
+        if (reader.parse(json_line, root)) { //store each value in the line to their respected values
             string name = root["name"].asString();
             double price = root["price"].asDouble();
             int core_count = root["core_count"].asInt();
@@ -23,14 +27,14 @@ void pcUtilities::readInjsonlCPU(string filename) {
                 //do nothing
             }
             else{
-                CPUList.push_back(CPU(name, price, core_count, core_clock, tdp, socket));
+                CPUList.push_back(CPU(name, price, core_count, core_clock, tdp, socket)); //add to CPUList vector
             }
         }
     }
 }
 
 
-void pcUtilities::readInjsonlGPU(string filename) {
+void PCUtilities::readInjsonlGPU(string filename) { //read in GPU jsonl file
     ifstream input_file(filename);
 
     string json_line;
@@ -38,7 +42,7 @@ void pcUtilities::readInjsonlGPU(string filename) {
 
     while(getline(input_file, json_line)) {
         Json::Reader reader;
-        if (reader.parse(json_line, root)) {
+        if (reader.parse(json_line, root)) { //store values
             string name = root["name"].asString();
             double price = root["price"].asDouble();
             int memory = root["memory"].asInt();
@@ -49,13 +53,13 @@ void pcUtilities::readInjsonlGPU(string filename) {
                 // do nothing
             }
             else{
-                GPUList.push_back(GPU(name, price, memory, core_clock, tdp, chipset));
+                GPUList.push_back(GPU(name, price, memory, core_clock, tdp, chipset)); //add to GPUList
             }
         }
     }
 }
 
-void pcUtilities::readInjsonlPSU(string filename) {
+void PCUtilities::readInjsonlPSU(string filename) { //read in PSU file
     ifstream input_file(filename);
 
     string json_line;
@@ -63,7 +67,7 @@ void pcUtilities::readInjsonlPSU(string filename) {
 
     while (getline(input_file, json_line)) {
         Json::Reader reader;
-        if (reader.parse(json_line, root)) {
+        if (reader.parse(json_line, root)) { //store values
             string name = root["name"].asString();
             double price = root["price"].asDouble();
             string type = root["type"].asString();
@@ -74,13 +78,13 @@ void pcUtilities::readInjsonlPSU(string filename) {
                 // do nothing
             }
             else{
-                PSUList.push_back(PSU(name, price, type, efficiency, wattage));
+                PSUList.push_back(PSU(name, price, type, efficiency, wattage)); //add to PSUList
             }
         }
     }
 }
 
-void pcUtilities::readInjsonlRAM(string filename) {
+void PCUtilities::readInjsonlRAM(string filename) { //store RAM jsonl file values
     ifstream input_file(filename);
 
     string json_line;
@@ -89,11 +93,11 @@ void pcUtilities::readInjsonlRAM(string filename) {
     int count = 0;
     while (getline(input_file, json_line)) {
         Json::Reader reader;
-        if (reader.parse(json_line, root)) {
+        if (reader.parse(json_line, root)) { //store values
             string name = root["name"].asString();
             double price = root["price"].asDouble();
 
-            Json::Value speeds = root["speed"];
+            Json::Value speeds = root["speed"]; //considering for speed
             int truespeed;
             for(const Json::Value& speed : speeds){
                 if(count == 0){
@@ -105,7 +109,7 @@ void pcUtilities::readInjsonlRAM(string filename) {
                 }
             }
 
-            Json::Value modules = root["modules"];
+            Json::Value modules = root["modules"]; //modules for RAM
             for(const Json::Value mod : modules){
                 if(count == 0){
                     temp.first = mod.asInt();
@@ -116,13 +120,19 @@ void pcUtilities::readInjsonlRAM(string filename) {
                     count = 0;
                 }
             }
-            RAMList.push_back(RAM(name, price, truespeed, temp));
+            if(price == 0 || price == NULL){
+
+            }
+            else{
+                RAMList.push_back(RAM(name, price, truespeed, temp)); //push to vector
+            }
+
         }
     }
 }
 
 
-void pcUtilities::readInjsonlMB(string filename) {
+void PCUtilities::readInjsonlMB(string filename) { //read in motherboard
     ifstream input_file(filename);
 
     string json_line;
@@ -130,7 +140,7 @@ void pcUtilities::readInjsonlMB(string filename) {
 
     while (getline(input_file, json_line)) {
         Json::Reader reader;
-        if (reader.parse(json_line, root)) {
+        if (reader.parse(json_line, root)) { //assign values
             string name = root["name"].asString();
             double price = root["price"].asDouble();
             string socket = root["socket"].asString();
@@ -142,14 +152,14 @@ void pcUtilities::readInjsonlMB(string filename) {
                 // do nothing
             }
             else{
-                MBList.push_back(Motherboard(name, price, socket, form_factor, memory_slots, max_memory));
+                MBList.push_back(Motherboard(name, price, socket, form_factor, memory_slots, max_memory)); //push to vector
             }
         }
     }
 }
 
 
-void pcUtilities::readInjsonlStr(string filename) {
+void PCUtilities::readInjsonlStr(string filename) { //read in storage
     ifstream input_file(filename);
 
     string json_line;
@@ -157,7 +167,7 @@ void pcUtilities::readInjsonlStr(string filename) {
 
     while (getline(input_file, json_line)) {
         Json::Reader reader;
-        if (reader.parse(json_line, root)) {
+        if (reader.parse(json_line, root)) { //assign values
             string name = root["name"].asString();
             double price = root["price"].asDouble();
             int capacity = root["capacity"].asInt();
@@ -167,7 +177,7 @@ void pcUtilities::readInjsonlStr(string filename) {
                 // do nothing
             }
             else{
-                STRList.push_back(Storage(name, price, capacity, type, interface));
+                STRList.push_back(Storage(name, price, capacity, type, interface)); //add to vector
             }
         }
     }
@@ -195,7 +205,9 @@ void PCUtilities::conglomerate() {
     //Creates large number of possible compatible combination of PC parts
     for(int a = 0; a < CPUList.size()/4; a++){
         CPU& cpu = CPUList[a];
-        cout << cpu.name << endl;
+        //PSU is set based on CPU wattage
+        PSU* psu = &PSUList[5];
+        if(cpu.tdp > 100) psu = &PSUList[3]; //Location of a 1000 watt PSU
         for(int b = 0; b < GPUList.size()/6; b++){
             GPU& gpu = GPUList[b];
             for(int c = 0; c < motherboardsBySocket[cpu.socket].size()/2; c++){
@@ -204,11 +216,11 @@ void PCUtilities::conglomerate() {
                     RAM& ram = *ramByGeneration[mobo.ram_generation][d];
                     for(int e = 16; e < 17; e += 500) {
                         if(count == size){
-                            cout << a << endl;
+                            cout << "WARNING: Max PC List Size Reached" << endl;
                             return;
                         }
                         Storage& str = STRList[e];
-                        sortedList[count] = pcCombo(cpu, gpu, PSUList[0], ram, mobo, str);
+                        sortedList[count] = PCCombo(cpu, gpu, *psu, ram, mobo, str);
                         count++;
                     }
                 }

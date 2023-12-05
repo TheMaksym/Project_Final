@@ -14,12 +14,9 @@ struct CompatInfo{
     //Which sockets are compatible with which cpus
     set<string> DDR5_sockets = {"AM5", "LGA1700"};;
     set<string> DDR4_sockets = {"LGA1150", "LGA1151", "LGA1200", "LGA2066", "LGA2011-3", "AM4", "TR4", "sTRX4"};
-    //Which cpus are compatible with which sockets
-
-
 };
 
-class pcPart{
+class pcPart{ //parent class containing name and price
 public:
     string name;
     double price;
@@ -59,6 +56,7 @@ public:
         this->core_clock = core_clock;
         this->tdp = tdp;
         this->chipset = chipset;
+        this->name += chipset;
     }
     //Default Constructor, if values need to be initialized later
     GPU() {};
@@ -68,8 +66,7 @@ class PSU : public pcPart{
 public:
     string type;
     string efficiency;
-    int wattage;
-
+    int wattage; //Wattage of PSU corresponds to how much power it can provide to other parts in PC
 
     PSU(string name, double price, string type, string efficiency, int wattage)
     : pcPart(name, price){
@@ -116,7 +113,7 @@ public:
         this->memory_slots = memory_slots;
         this->max_memory_per_slot = max_memory/memory_slots;
         CompatInfo compat_info;
-        if(compat_info.DDR5_sockets.count(socket) != 0){
+        if(compat_info.DDR5_sockets.count(socket) != 0){ //assign values of ram generation for the motherboard
             ram_generation = 5;
         }
         else if(compat_info.DDR4_sockets.count(socket) != 0){
@@ -134,20 +131,38 @@ class Storage : public pcPart{
 public:
     int capacity;
     string type;
-    string interface;
+    string interfaceStr;
 
     Storage(string name, double price, int capacity, string type, string interfaceStr) //assing values
     : pcPart(name, price){
         this->capacity = capacity;
         this->type = type;
-        this->interface = interface;
+        this->interfaceStr = interfaceStr;
     }
     //Default Constructor, if values need to be initialized later
     Storage() {};
 };
 
-class pcCombo {
+class PCCombo {
+public: //containes all elements that make up a PC
+    CPU cpu;
+    GPU gpu;
+    PSU psu;
+    RAM ram;
+    Storage str;
+    Motherboard mb;
+    double price;
 
+    PCCombo(CPU cpu, GPU gpu, PSU psu, RAM ram, Motherboard mb, Storage str){ //constructor
+        this->cpu = cpu;
+        this->gpu = gpu;
+        this->psu = psu;
+        this->ram = ram;
+        this->mb = mb;
+        this->str = str;
+        this->price = cpu.price + gpu.price + psu.price + ram.price + mb.price + str.price; //total price of PC
+    }
+    PCCombo() {};
 };
 
 

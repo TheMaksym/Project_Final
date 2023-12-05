@@ -5,37 +5,30 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <set>
 #include "dist/json/json.h"
+#include <unordered_map>
+#include <list>
+#include <algorithm>
 
 using namespace std;
 #ifndef PROJECT_3__PCUTILITIES_H
 #define PROJECT_3__PCUTILITIES_H
 class PCUtilities{
 public:
-    vector<CPU> CPUList;
+    vector<CPU> CPUList; //declaring all vectors for PC components and the whole PC itself
     vector<GPU> GPUList;
     vector<PSU> PSUList;
     vector<RAM> RAMList;
     vector<Motherboard> MBList;
     vector<Storage> STRList;
-    vector<pcCombo> sortedList;
-    vector<pcCombo> compList;
+    vector<PCCombo> sortedList;
+    vector<PCCombo> sortedList2;
 
 
+    PCUtilities();
 
-    vector<CPU> CPUList2;
-    vector<GPU> GPUList2;
-    vector<PSU> PSUList2;
-    vector<RAM> RAMList2;
-    vector<Motherboard> MBList2;
-    vector<Storage> STRList2;
-    vector<pcCombo> sortedList2;
-
-
-
-    void compareParts();
-
-    void dupeVect();
+    void dupeVect(); //duplicate a vector for both sorts
 
     void readInjsonlCPU(string filename); //read in each file dependent on the jsonl files
     void readInjsonlGPU(string filename);
@@ -44,11 +37,11 @@ public:
     void readInjsonlMB(string filename);
     void readInjsonlStr(string filename);
 
-    unordered_map<string, vector<Motherboard*>> motherboardsBySocket;
-    unordered_map<int, vector<RAM*>> ramByGeneration;
+    unordered_map<string, vector<Motherboard*>> motherboardsBySocket; //used to generate combinations
+    unordered_map<int, vector<RAM*>> ramByGeneration; //used to generate combinations
     void hashMotherboards();
     void hashRam();
-    void conglomerate();
+    void conglomerate(); //produce combinations of pc parts
 };
 
 #endif //PROJECT_3__PCUTILITIES_H
